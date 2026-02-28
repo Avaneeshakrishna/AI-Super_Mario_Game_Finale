@@ -16,7 +16,7 @@ var MarioMaker = (function() {
     var inputToggleButton;
 
     var editorStarted = 0;
-     var inputMode = 'keyboard';
+    var inputMode = 'keyboard';
 
     var backToMenuBtn;
 
@@ -98,8 +98,8 @@ var MarioMaker = (function() {
       view.style(backToMenuBtn, { display: 'block' });
 
       marioGame.clearInstances();
-      marioGame.setInputMode(inputMode);
       marioGame.init(levelMap, 1); //initiate level 1 of map
+      marioGame.setInputMode(inputMode);
 
       that.hideMainMenu();
       editor.removeEditorScreen();

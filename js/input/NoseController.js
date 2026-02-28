@@ -21,6 +21,7 @@ function NoseController(config) {
   var noFaceCounter = 0;
   var running = false;
   var jumpCooldownUntil = 0;
+  var mirrorXAxis = true;
 
   var that = this;
 
@@ -122,9 +123,11 @@ function NoseController(config) {
     var sprintThreshold = 0.06;
     var jumpThreshold = -0.03;
 
-    if (dx > deadZoneX) {
+    var effectiveDx = mirrorXAxis ? -dx : dx;
+
+    if (effectiveDx > deadZoneX) {
       setDirectionalState(false, true);
-    } else if (dx < -deadZoneX) {
+    } else if (effectiveDx < -deadZoneX) {
       setDirectionalState(true, false);
     } else {
       setDirectionalState(false, false);
@@ -143,7 +146,7 @@ function NoseController(config) {
     }
 
     if (!window.FaceMesh || !window.Camera) {
-      onStatus('Face tracking library unavailable');
+      onStatus('Face tracking library unavailable (check internet/CDN). Using keyboard mode');
       return;
     }
 
@@ -196,7 +199,14 @@ function NoseController(config) {
     } catch (error) {
       running = false;
       releaseAll();
-      onStatus('Camera access failed');
+
+      if (error && error.name == 'NotAllowedError') {
+        onStatus('Camera permission denied. Allow camera access in browser settings');
+      } else if (error && error.name == 'NotFoundError') {
+        onStatus('No camera device found');
+      } else {
+        onStatus('Camera access failed');
+      }
     }
   };
 
@@ -228,6 +238,11 @@ function NoseController(config) {
     faceMesh = null;
 
     onStatus('Nose control stopped');
+  };
+
+
+  this.setMirrorXAxis = function(shouldMirror) {
+    mirrorXAxis = shouldMirror ? true : false;
   };
 
   this.recenter = function() {

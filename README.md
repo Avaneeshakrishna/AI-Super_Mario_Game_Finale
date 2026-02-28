@@ -43,9 +43,10 @@ Then open:
 
 ## Troubleshooting
 
-- If camera fails, ensure browser permission is granted.
+- If camera permission popup does not appear, verify **Input: Nose** is selected, check internet access to MediaPipe CDN scripts, and confirm camera access is not blocked/denied in browser site settings.
 - Best in Chromium-based browsers.
 - Use normal room lighting and keep your face visible.
+- If selecting **Input: Nose** and pressing Start shows no game, update to the latest code: it now auto-falls back to keyboard mode when nose scripts are unavailable.
 
 
 ## GitHub update / PR troubleshooting

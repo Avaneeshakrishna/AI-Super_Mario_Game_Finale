@@ -98,23 +98,74 @@ function MarioGame() {
   that.bindKeyPress = function() {
     var canvas = gameUI.getCanvas(); //for use with touch events
 
-    if (keyBindingDone) {
+  if (keyBindingDone) {
       return;
     }
 
     keyBindingDone = true;
+
+    function getKeyIndex(e) {
+      switch (e.code) {
+        case 'ArrowLeft':
+          return 37;
+        case 'ArrowUp':
+          return 38;
+        case 'ArrowRight':
+          return 39;
+        case 'ShiftLeft':
+        case 'ShiftRight':
+          return 16;
+        case 'ControlLeft':
+        case 'ControlRight':
+          return 17;
+        case 'Space':
+          return 32;
+        case 'KeyR':
+          return 82;
+      }
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          return 37;
+        case 'ArrowUp':
+          return 38;
+        case 'ArrowRight':
+          return 39;
+        case 'Shift':
+          return 16;
+        case 'Control':
+          return 17;
+        case ' ':
+        case 'Spacebar':
+          return 32;
+        case 'r':
+        case 'R':
+          return 82;
+      }
+
+      return undefined;
+    }
+
     //key binding
     document.body.addEventListener('keydown', function(e) {
-      keys[e.keyCode] = true;
+     var keyIndex = getKeyIndex(e);
 
-    if (e.keyCode == 82 && inputMode == 'nose' && noseController) {
+      if (typeof keyIndex != 'undefined') {
+        keys[keyIndex] = true;
+      }
+
+      if (keyIndex == 82 && inputMode == 'nose' && noseController) {
         noseController.recenter();
         inputStatus = 'Re-centering nose calibration';
-    }
+      }
     });
 
     document.body.addEventListener('keyup', function(e) {
-      keys[e.keyCode] = false;
+     var keyIndex = getKeyIndex(e);
+
+      if (typeof keyIndex != 'undefined') {
+        keys[keyIndex] = false;
+      }
     });
 
     //key binding for touch events
@@ -187,7 +238,7 @@ function MarioGame() {
     });
   };
 
-  this.setVirtualKey = function(keyCode, state) {
+   this.setVirtualKey = function(keyCode, state) {
     keys[keyCode] = state;
   };
 
@@ -201,11 +252,23 @@ function MarioGame() {
 
   this.setInputMode = function(mode) {
     inputMode = mode == 'nose' ? 'nose' : 'keyboard';
-    that.applyInputMode();
+
+    try {
+      that.applyInputMode();
+    } catch (error) {
+      inputMode = 'keyboard';
+      inputStatus = 'Nose mode unavailable. Using keyboard mode';
+    }
   };
 
   this.applyInputMode = function() {
     if (inputMode == 'nose') {
+      if (typeof NoseController == 'undefined') {
+        inputMode = 'keyboard';
+        inputStatus = 'Nose tracking script missing. Using keyboard mode';
+        return;
+      }
+
       if (!noseController) {
         noseController = new NoseController({
           onVirtualKey: that.setVirtualKey,
@@ -235,6 +298,7 @@ function MarioGame() {
       instructionTick++;
     }
 
+    that.showInputStatus();
     that.renderMap();
 
     for (var i = 0; i < powerUps.length; i++) {
@@ -263,14 +327,16 @@ function MarioGame() {
   };
 
   this.showInstructions = function() {
-   if (inputMode == 'nose') {
+  if (inputMode == 'nose') {
       gameUI.writeText('Nose controls: move head left/right, move up to jump, large tilt to run', 30, 30);
       gameUI.writeText('Press R anytime to re-center calibration', 30, 60);
     } else {
       gameUI.writeText('Controls: Arrow keys for direction, shift to run, ctrl for bullets', 30, 30);
       gameUI.writeText('Tip: Jumping while running makes you jump higher', 30, 60);
     }
+  };
 
+  this.showInputStatus = function() {
     gameUI.writeText('Input: ' + inputMode + ' | ' + inputStatus, 30, 90);
   };
 

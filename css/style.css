@@ -353,3 +353,17 @@
 .fb-comments {
   margin: 0 auto;
 }
+
+.input-toggle-btn {
+  position: absolute;
+  left: 40px;
+  bottom: 40px;
+  width: 220px;
+  height: 44px;
+  border: 2px solid #222;
+  background: rgba(0, 0, 0, 0.75);
+  color: #fff;
+  font-family: SuperMario256;
+  font-size: 14px;
+  cursor: pointer;
+}

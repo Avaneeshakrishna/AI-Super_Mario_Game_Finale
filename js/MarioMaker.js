@@ -13,8 +13,10 @@ var MarioMaker = (function() {
     var editorButton;
     var startGameButton;
     var createdLevelsButton;
+    var inputToggleButton;
 
     var editorStarted = 0;
+    var inputMode = 'keyboard';
 
     var backToMenuBtn;
 
@@ -37,6 +39,7 @@ var MarioMaker = (function() {
       editorButton = view.create('button');
       startGameButton = view.create('button');
       createdLevelsButton = view.create('div');
+      inputToggleButton = view.create('button');
       backToMenuBtn = view.create('button');
 
       view.addClass(btnWrapper, 'btn-wrapper');
@@ -44,20 +47,34 @@ var MarioMaker = (function() {
       view.addClass(editorButton, 'editor-btn');
       view.addClass(startGameButton, 'start-btn');
       view.addClass(createdLevelsButton, 'created-btn');
+      view.addClass(inputToggleButton, 'input-toggle-btn');
       view.addClass(backToMenuBtn, 'back-btn');
 
       view.append(startScreen, editorButton);
       view.append(startScreen, startGameButton);
       view.append(startScreen, createdLevelsButton);
+      view.append(startScreen, inputToggleButton);
       view.append(btnWrapper, backToMenuBtn);
       view.append(mainWrapper, startScreen);
       view.append(mainWrapper, btnWrapper);
+
+      view.setHTML(inputToggleButton, 'Input: Keyboard');
 
       editorButton.onclick = that.startEditor;
 
       createdLevelsButton.onclick = that.startCreatedLevels;
 
       backToMenuBtn.onclick = that.backToMenu;
+
+      inputToggleButton.onclick = function() {
+        if (inputMode == 'keyboard') {
+          inputMode = 'nose';
+          view.setHTML(inputToggleButton, 'Input: Nose');
+        } else {
+          inputMode = 'keyboard';
+          view.setHTML(inputToggleButton, 'Input: Keyboard');
+        }
+      };
 
       startGameButton.onclick = function() {
         map = that.loadMainGameMap();
@@ -82,6 +99,7 @@ var MarioMaker = (function() {
 
       marioGame.clearInstances();
       marioGame.init(levelMap, 1); //initiate level 1 of map
+      marioGame.setInputMode(inputMode);
 
       that.hideMainMenu();
       editor.removeEditorScreen();
